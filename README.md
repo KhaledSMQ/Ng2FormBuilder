@@ -7,4 +7,4 @@ https://github.com/kevinchappell/formBuilder
 
 
 
-![Settings Window](https://github.com/KhaledSMQ/testing/raw/bd41da5e8ea875c2204a33f80a0811fd212319dc/image.PNG)
+![Settings Window](https://raw.githubusercontent.com/KhaledSMQ/Ng2FormBuilder/efea48397a3293a36f5dabfb928528e27d28631f/image.PNG)
