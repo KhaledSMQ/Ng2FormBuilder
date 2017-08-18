@@ -1,0 +1,169 @@
+.cb-wrap {
+  float: right;
+  width: 26%;
+  transition: transform 250ms;
+
+  &.pull-left {
+    .form-actions {
+      float: left;
+    }
+  }
+
+  h4 {
+    margin-top: 0;
+    color: $grey;
+  }
+
+  .save:hover {
+    color: $success;
+  }
+
+  @include breakpoint('phone-lrg') {
+    width: 64px;
+
+    h4 {
+      display: none;
+    }
+  }
+}
+
+.frmb-control {
+  margin: 0;
+  padding: 0;
+  border-radius: 5px;
+
+  li {
+    cursor: move;
+    list-style: none;
+    margin: 0 0 -1px 0;
+    padding: 10px;
+    text-align: left;
+    background: $white;
+    user-select: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px $input-border-color;
+
+    .control-icon {
+      width: 16px;
+      height: auto;
+      margin-right: 10px;
+      margin-left: 0.2em;
+      display: inline-block;
+
+      img,
+      svg {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    &:first-child {
+      border-radius: 5px 5px 0 0;
+      margin-top: 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 5px 5px;
+    }
+
+    &::before {
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    &:hover {
+      background-color: darken($white, 5%);
+    }
+
+    &.ui-sortable-helper {
+      border-radius: 5px;
+      transition: box-shadow 250ms;
+      box-shadow: 2px 2px 6px 0 $grey;
+      border: 1px solid $white;
+    }
+
+    &.ui-state-highlight {
+      width: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+      border: 0 none;
+    }
+
+    &.moving {
+      opacity: .6;
+    }
+
+    &.fb-separator {
+      background-color: transparent;
+      box-shadow: none;
+      padding: 0;
+      cursor: default;
+
+      hr {
+        margin: 10px 0;
+      }
+    }
+
+    @include breakpoint('phone-lrg') {
+      &::before {
+        font-size: 30px;
+      }
+
+      span {
+        display: none;
+      }
+    }
+  }
+
+  &.sort-enabled {
+    li.ui-state-highlight {
+      box-shadow: none;
+      height: 0;
+      width: 100%;
+      background: radial-gradient(ellipse at center, rgba(84, 84, 84, 1) 0%, rgba(0, 0, 0, 0) 75%);
+      border: 0 none;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      visibility: visible;
+      overflow: hidden;
+      margin: 1px 0 3px;
+      animation: PLACEHOLDER 250ms forwards;
+    }
+  }
+}
+
+.fb-mobile {
+  .form-actions {
+    width: 100%;
+
+    button {
+      width: 100%;
+      font-size: .85em !important;
+      display: block !important;
+      border-radius: 0 !important;
+      margin-top: -1px;
+      margin-left: 0 !important;
+
+      &:first-child {
+        border-radius: 5px 5px 0 0 !important;
+        margin-top: 0 !important;
+        border-bottom: 0 none;
+      }
+
+      &:last-child {
+        border-radius: 0 0 5px 5px !important;
+      }
+    }
+  }
+}
+
+.form-actions {
+  float: right;
+  margin-top: 5px;
+
+  button {
+    border: 0 none;
+  }
+}

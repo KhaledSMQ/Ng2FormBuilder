@@ -1,0 +1,67 @@
+.kc-toggle {
+  padding-left: 0 !important;
+
+  span {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: lighten($grey, 50%);
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid lighten($grey, 40%);
+    padding: 2px;
+    overflow: hidden;
+    float: left;
+    margin-right: 5px;
+
+    &::after,
+    &::before {
+      position: absolute;
+      display: inline-block;
+      top: 0;
+    }
+
+    &::after {
+      position: relative;
+      content: '';
+      width: 50%;
+      height: 100%;
+      left: 0;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, lighten($grey-light-30, 30%) 0%, $grey-light 100%);
+      border: 1px solid lighten($grey, 20%);
+      transition: transform 50ms;
+      transform: translateX(0);
+    }
+
+    &::before {
+      border-radius: 4px;
+      top: 2px;
+      left: 2px;
+      content: '';
+      width: calc(100% - 4px);
+      height: 18px;
+      box-shadow: 0 0 1px 1px lighten($grey, 30%) inset;
+      background-color: transparent;
+    }
+  }
+
+  input {
+    height: 0;
+    overflow: hidden;
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+
+    &:checked + span {
+      &::after {
+        transform: translateX(100%);
+      }
+
+      &::before {
+        background-color: $copy;
+      }
+    }
+  }
+}

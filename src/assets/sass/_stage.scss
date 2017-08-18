@@ -1,0 +1,737 @@
+.empty {
+  .frmb {
+    border: 3px dashed $grey-light;
+    margin-right: 5px;
+    background-color: $empty-stage-color;
+  }
+}
+
+.stage-wrap {
+  position: relative;
+  float: left;
+  width: 74%;
+
+  &.pull-right {
+    .frmb {
+      margin: 0 0 0 6px;
+    }
+  }
+
+  @include breakpoint('phone-lrg') {
+    width: calc(100% - 64px);
+  }
+
+
+  &.empty {
+    &::after {
+      content: attr(data-content);
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      margin-top: -1em;
+    }
+  }
+}
+
+.frmb {
+  list-style-type: none;
+  min-height: 200px;
+  margin: 0 6px 0 0;
+  padding: 0;
+  transition: background-color 500ms ease-in-out;
+
+  .fb-required {
+    color: $error;
+  }
+
+  &.removing {
+    overflow: hidden;
+  }
+
+  > li {
+    &:hover {
+      .field-actions {
+        opacity: 1;
+      }
+
+      border-color: #66afe9;
+      outline: 0;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 8px rgba(102, 175, 233, 0.6);
+
+      li {
+        :hover {
+          background: #fefefe;
+        }
+      }
+    }
+  }
+
+  li {
+    position: relative;
+    padding: 6px;
+    clear: both;
+    margin-left: 0;
+    margin-bottom: 3px;
+    background-color: $white;
+    transition: background-color 250ms ease-in-out, margin-top 400ms;
+
+    &.hidden-field {
+      background-color: $hidden-field-bgcolor;
+    }
+
+    &:first-child {
+      border-top-right-radius: 5px;
+      border-top-left-radius: 5px;
+
+      .field-actions {
+        .btn:last-child {
+          border-radius: 0 5px 0 0;
+        }
+      }
+    }
+
+    &:last-child {
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px;
+    }
+
+    &.no-fields label {
+      font-weight: 400;
+    }
+
+    @keyframes PLACEHOLDER {
+      0% {
+        height: 0;
+      }
+
+      100% {
+        height: 15px;
+      }
+    }
+
+    &.frmb-placeholder,
+    &.ui-state-highlight {
+      height: 0;
+      padding: 0;
+      background: radial-gradient(ellipse at center, rgba(84, 84, 84, 1) 0%, rgba(0, 0, 0, 0) 75%);
+      border: 0 none;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      visibility: visible;
+      overflow: hidden;
+      margin-bottom: 3px;
+      animation: PLACEHOLDER 250ms forwards;
+    }
+
+    &.moving,
+    &.ui-sortable-helper {
+      transition: box-shadow 500ms ease-in-out;
+      box-shadow: 2px 2px 6px 0 $grey;
+      border: 1px solid $white;
+      border-radius: 5px;
+    }
+
+    &.disabled-field {
+      z-index: 1;
+      position: relative;
+      overflow: visible;
+
+      &:hover {
+        .frmb-tt {
+          display: inline-block;
+        }
+      }
+
+      [type=checkbox] {
+        float: left;
+        margin-right: 10px;
+      }
+
+      h2 {
+        border-bottom: 0 none;
+      }
+
+      label {
+        font-size: 12px;
+        font-weight: 400;
+        color: $grey;
+      }
+
+      .prev-holder {
+        cursor: default;
+        line-height: 28px;
+        padding-left: 5px;
+      }
+    }
+
+    .close-field {
+      position: absolute;
+      color: $grey;
+      left: 50%;
+      bottom: 6px;
+      background: $white;
+      border-top: 1px solid $input-border-color;
+      border-left: 1px solid $input-border-color;
+      border-right: 1px solid $input-border-color;
+      transform: translateX(-50%);
+      padding: 0 5px;
+      border-top-right-radius: 3px;
+      border-top-left-radius: 3px;
+      cursor: pointer;
+      transition: background-color 250ms ease-in-out;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    &.button-field,
+    &.header-field,
+    &.paragraph-field {
+      h1,
+      h2,
+      h3,
+      p,
+      canvas,
+      output,
+      address,
+      blockquote,
+      .prev-holder {
+        margin: 0;
+      }
+
+      .field-label {
+        display: none;
+      }
+
+      &.editing {
+        .field-label {
+          display: block;
+        }
+      }
+    }
+
+    &.paragraph-field {
+      .fld-label {
+        min-height: 150px;
+        overflow-y: auto;
+      }
+    }
+
+    &.checkbox-field {
+      .field-label {
+        display: none;
+      }
+    }
+  }
+
+  li.deleting,
+  li.delete:hover,
+  li:hover li.delete:hover {
+    background-color: #fdd;
+
+    .close-field {
+      background-color: #fdd;
+    }
+  }
+
+  li.deleting {
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  &.disabled-field {
+    padding: 0 5px;
+
+    :hover {
+      border-color: transparent;
+    }
+
+    .form-element {
+      float: none;
+      margin-bottom: 10px;
+      overflow: visible;
+      padding: 5px 0;
+      position: relative;
+    }
+  }
+
+  .frm-holder {
+    display: none;
+  }
+
+  .tooltip {
+    left: 20px;
+  }
+
+  .prev-holder {
+    display: block;
+
+    .form-group {
+      margin: 0;
+    }
+
+    .ql-editor {
+      min-height: 125px;
+    }
+
+    .form-group > label:not([class='fb-checkbox-label']) {
+      display: none;
+    }
+
+    select, input[type='text'], textarea, input[type='number'] {
+      background-color: $white;
+      border: 1px solid $grey-light;
+      box-shadow: inset 0 1px 1px $input-box-shadow-color;
+    }
+
+    input[type='color'] {
+      width: 60px;
+      padding: 2px;
+      display: inline-block;
+    }
+
+    input[type='date'] {
+      width: auto;
+    }
+
+    select[multiple] {
+      height: auto;
+    }
+
+    label {
+      font-weight: normal;
+    }
+
+    input[type='number'] {
+      width: auto;
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+      display: inline-block;
+    }
+
+    input[type='color'] {
+      width: 60px;
+      padding: 2px;
+      display: inline-block;
+    }
+  }
+
+  .required-asterisk {
+    display: none;
+  }
+
+  .field-label,
+  .legend {
+    color: $grey;
+    margin-bottom: 5px;
+    line-height: 27px;
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  .disabled-field .field-label {
+    display: block;
+  }
+
+  .other-val {
+    margin-left: 5px;
+    display: none;
+  }
+
+  .field-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    opacity: 0;
+
+    a {
+      &:hover {
+        text-decoration: none;
+        color: #000;
+      }
+    }
+
+    .btn {
+      display: inline-block;
+
+      // width: 32px;
+      height: 32px;
+      padding: 0 6px;
+      border-radius: 0;
+      border-color: $input-border-color;
+      background-color: $white;
+      color: $input-border-color;
+      line-height: 32px;
+      font-size: 16px;
+      border-width: 0 0 1px 1px;
+
+      &:first-child {
+        border-bottom-left-radius: 5px;
+      }
+    }
+
+    .toggle-form {
+      &:hover {
+        background-color: $edit;
+        color: $white;
+      }
+    }
+
+    .copy-button {
+      font-size: 14px;
+
+      &:hover {
+        background-color: $copy;
+        color: $white;
+      }
+    }
+
+    .del-button {
+      font-size: 20px;
+      line-height: 30px;
+
+      &:hover {
+        background-color: $remove;
+        color: $white;
+      }
+    }
+  }
+
+  .option-actions {
+    text-align: right;
+    margin-top: 10px;
+    width: 100%;
+    margin-left: 2%;
+
+    button,
+    a {
+      background: $white;
+      padding: 5px 10px;
+      border: 1px solid $input-border-color;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: default;
+    }
+  }
+
+  .sortable-options-wrap {
+    width: 81.33333333%;
+    display: inline-block;
+
+    label {
+      font-weight: normal;
+    }
+
+    @include breakpoint('phone-lrg') {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  .sortable-options {
+    display: inline-block;
+    width: 100%;
+    margin-left: 2%;
+    background: $input-border-color;
+    margin-bottom: 0;
+    border-radius: 5px;
+    list-style: none;
+    padding: 0;
+
+    > li {
+      cursor: move;
+      margin: 1px;
+
+      &:nth-child(1) .remove {
+        display: none;
+      }
+
+      .radio-group-field & {
+        &:nth-child(2) .remove {
+          display: none;
+        }
+      }
+
+      .remove {
+        position: absolute;
+        opacity: 1;
+        right: 14px;
+        height: 17px;
+        width: 17px;
+        line-height: 17px;
+        text-align: center;
+        top: 14px;
+        font-size: 18px;
+        padding: 0;
+        color: $error;
+
+        &:hover {
+          background-color: $error;
+          text-decoration: none;
+          color: $white;
+        }
+      }
+    }
+
+    .option-selected {
+      margin: 0;
+      width: 5%;
+    }
+
+    input[type='text'] {
+      width: calc(44.5% - 17px);
+      margin: 0 1%;
+      float: none;
+    }
+  }
+
+  .form-field {
+    .form-group {
+      width: 100%;
+      clear: left;
+      float: none;
+    }
+  }
+
+  .col-md-6,
+  .col-md-8 {
+    .form-elements {
+      width: 100%;
+    }
+  }
+
+  .field-options .add-area .add {
+    clear: both;
+  }
+
+  .style-wrap {
+    button {
+      &.selected {
+        border: 1px solid $black;
+        margin-top: 0;
+        margin-right: 1px;
+        box-shadow: 0 0 0 1px $white inset;
+        padding: 1px 5px;
+      }
+    }
+  }
+
+  .form-elements {
+    padding: 10px 5px;
+    background: #f7f7f7;
+    border-radius: 3px;
+    margin: 0;
+    border: 1px solid $input-border-color;
+
+    .input-wrap {
+      width: 81.33333333%;
+      margin-left: 2%;
+      float: left;
+
+      > input[type=checkbox] {
+        margin-top: 8px;
+      }
+    }
+
+    .btn-group {
+      margin-left: 2%;
+    }
+
+    .add {
+      clear: both;
+    }
+
+    input[type='text'],
+    input[type='number'],
+    input[type='date'],
+    input[type='color'],
+    textarea,
+    select {
+      transition: background 250ms ease-in-out;
+      padding: 6px 12px;
+      border: 1px solid $input-border-color;
+      background-color: $white;
+    }
+
+    @include breakpoint('phone-lrg') {
+      .input-wrap {
+        width: 100%;
+        margin-left: 0;
+        float: none;
+      }
+    }
+
+
+    input[type='number'] {
+      width: auto;
+    }
+
+    .btn-group {
+      margin-left: 2%;
+    }
+
+    .false-label,
+    label {
+      .col-md-6 &,
+      .col-md-8 & {
+        display: block;
+      }
+
+      &:first-child {
+        width: 16.66666667%;
+        padding-top: 7px;
+        margin-bottom: 0;
+        text-align: right;
+        font-weight: 700;
+        float: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-transform: capitalize;
+
+        @include breakpoint('phone-lrg') {
+          display: block;
+          width: auto;
+          float: none;
+          text-align: left;
+
+          &.empty-label {
+            display: none;
+          }
+        }
+      }
+
+      &.multiple,
+      &.required-label,
+      &.toggle-label,
+      &.roles-label,
+      &.other-label {
+        text-align: left;
+        float: none;
+        margin-bottom: -3px;
+        font-weight: 400;
+        width: calc(81.3333% - 23px);
+      }
+    }
+
+    input {
+      &.error {
+        border: 1px solid $error;
+      }
+
+      &.fld-maxlength {
+        width: 75px;
+      }
+
+      &.field-error {
+        background: $off-white;
+        border: 1px solid $input-border-color;
+      }
+    }
+
+    label {
+      em {
+        display: block;
+        font-weight: 400;
+        font-size: .75em;
+      }
+
+      &.maxlength-label {
+        line-height: 1em;
+      }
+    }
+
+    .available-roles {
+      display: none;
+      padding: 10px;
+      margin: 10px 0;
+      background: darken($white, 10%);
+      box-shadow: inset 0 0 2px 0 $grey-light-30;
+
+      @include breakpoint('phone-lrg') {
+        margin-left: 0;
+      }
+
+
+      label {
+        font-weight: 400;
+        width: auto;
+        float: none;
+        display: inline;
+      }
+
+      input {
+        display: inline;
+        top: auto;
+      }
+    }
+  }
+}
+
+.autocomplete-field {
+  .sortable-options {
+    .option-selected {
+      display: none;
+    }
+  }
+}
+
+.fb-mobile {
+  .field-actions {
+    opacity: 1;
+  }
+}
+
+/*   ------------   TOOLTIP   ------------   */
+
+*[tooltip] {
+  position: relative;
+}
+
+*[tooltip]:hover:after {
+  background: rgba(0, 0, 0, 0.9);
+  border-radius: 5px 5px 5px 0;
+  bottom: 23px;
+  color: $white;
+  content: attr(tooltip);
+  padding: 10px 5px;
+  position: absolute;
+  z-index: 98;
+  left: 2px;
+  width: 230px;
+  text-shadow: none;
+  font-size: 12px;
+  line-height: 1.5em;
+  cursor: default;
+}
+
+*[tooltip]:hover:before {
+  border: solid;
+  border-color: $grey-dark transparent;
+  border-width: 6px 6px 0;
+  bottom: 17px;
+  content: '';
+  left: 2px;
+  position: absolute;
+  z-index: 99;
+  cursor: default;
+}
+
+.tooltip-element {
+  visibility: visible;
+  color: $white;
+  background: $black;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: inline-block;
+  text-align: center;
+  line-height: 16px;
+  margin: 0 5px;
+  font-size: 12px;
+  cursor: default;
+}
