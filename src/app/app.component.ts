@@ -1,7 +1,6 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {config, defaultI18n, defaultOptions} from "./formbuilder/config";
-import {control} from "./formbuilder/control";
-import {FormBuilderCreateor} from "./formbuilder/form-builder";
+import { Component, OnInit } from '@angular/core';
+import { config, defaultI18n, defaultOptions } from "./formbuilder/config";
+import { FormBuilderCreateor } from "./formbuilder/form-builder";
 import I18N from "./formbuilder/mi18n";
 
 function initJq() {
@@ -53,7 +52,7 @@ function initJq() {
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-
+  // encapsulation: ViewEncapsulation.None
 })
 
 export class AppComponent implements OnInit {

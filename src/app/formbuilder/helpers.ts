@@ -1,16 +1,11 @@
-import {
-    instanceDom,
-    empty,
-    optionFieldsRegEx,
-    remove
-} from './dom';
-import {instanceData} from './data';
+import { empty, instanceDom, optionFieldsRegEx, remove } from './dom';
+import { instanceData } from './data';
 
 
 import events from './events';
-import {config} from './config';
+import { config } from './config';
 import utils from './utils';
-import {control} from './control';
+import { control } from './control';
 import controlCustom from './controls/custom';
 import I18N from "./mi18n";
 
@@ -792,6 +787,7 @@ export default class Helpers {
     toggleEdit(fieldId, animate = true) {
         const field = document.getElementById(fieldId);
         const toggleBtn = $('.toggle-form', field);
+      if ( !toggleBtn.length ) return;
         const editPanel = $('.frm-holder', field);
         field.classList.toggle('editing');
         toggleBtn.toggleClass('open');
@@ -879,9 +875,10 @@ export default class Helpers {
     /**
      * Remove a field from the stage
      * @param  {String}  fieldID ID of the field to be removed
+     * @param  { Number } animationSpeed
      * @return {Boolean} fieldRemoved returns true if field is removed
      */
-    removeField(fieldID) {
+    removeField(fieldID, animationSpeed = 250) {
         let fieldRemoved = false;
         let _this = this;
         const form = this.d.stage;
@@ -909,7 +906,7 @@ export default class Helpers {
             return false;
         }
 
-        $field.slideUp(250, function () {
+      $field.slideUp(animationSpeed, function () {
             $field.removeClass('deleting');
             $field.remove();
             fieldRemoved = true;
@@ -1027,8 +1024,8 @@ export default class Helpers {
      */
     processOptions(options) {
         const _this = this;
-        let {actionButtons, ...opts} = options;
-        actionButtons = [{
+      let {actionButtons, replaceFields, ...opts} = options;
+      actionButtons = [ {
             type: 'button',
             id: 'clear',
             className: 'clear-all btn btn-danger',
@@ -1039,7 +1036,7 @@ export default class Helpers {
             type: 'button',
             label: 'viewJSON',
             id: 'data',
-            className: 'btn btn-default',
+        className: 'btn btn-default get-data',
             events: {
                 click: _this.showData.bind(_this)
             }
@@ -1055,6 +1052,9 @@ export default class Helpers {
             }
         }].concat(options.actionButtons);
         (<any>config).opts = (<any>Object).assign({}, {actionButtons}, opts);
+      if ( replaceFields !== undefined )
+        opts.disableFields = opts.disableFields.concat(replaceFields.map(({type}) => type && type));
+      (<any>config).opts = Object.assign({}, {actionButtons}, opts);
         return (<any>config).opts;
     }
 

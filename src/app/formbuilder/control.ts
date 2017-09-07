@@ -90,9 +90,11 @@ export class control {
      * Getter to retrieve class configuration.
      * Supports properties:
      *  - mi18n - a mi18n lookup, (or object of type: lookup for classes supporting multiple types)
-     *  - i18n - for custom / plugin controls, translations for labels can be specified here as an object of locale: label (or an object of type: label for classes supporting multiple types).
+     *  - i18n - for custom / plugin controls, translations for labels can be specified here as an object of locale:
+     * label (or an object of type: label for classes supporting multiple types).
      *  - icon - icon, or object of type: icon for defined types
-     *  - inactive - array of inactive types that shouldn't appear in formBuilder interface (but still be supported for rendering purposes)
+     *  - inactive - array of inactive types that shouldn't appear in formBuilder interface (but still be supported for
+     * rendering purposes)
      * @return {Object} configuration
      */
     static get definition(): any {
@@ -308,7 +310,8 @@ export class control {
     /**
      * code to execute for supported events
      * to implement an onRender event in a child class, simply define an onRender method
-     * @param {String} eventType - optional type of event to retrieve an event function for. If not specified all events returned
+     * @param {String} eventType - optional type of event to retrieve an event function for. If not specified all
+     *     events returned
      * @return {Function/Object} - function to execute for specified event, or all events of no eventType is specified
      */
     on(eventType) {
@@ -357,7 +360,7 @@ export class control {
      * @param  {Object} attributes
      * @return {Object} DOM element
      */
-    public markup(tag, content = '', attributes = {}) {
+    public markup(tag, content: any = '', attributes = {}) {
         this.element = utils.markup(tag, content, attributes);
         return this.element;
     }

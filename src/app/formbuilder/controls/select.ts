@@ -1,9 +1,10 @@
-import {control} from '../control';
-
 /**
  * Text input class
  * Output a <input type="text" ... /> form element
  */
+
+import { control } from "../control";
+
 export default class controlSelect extends control {
 
   /**
@@ -24,7 +25,7 @@ export default class controlSelect extends control {
    * @return {Object} DOM Element to be injected into the form.
    */
   build() {
-    let options : any = [];
+    let options = [];
     let {values, value, placeholder, type, inline, other, toggle, ...data} = this.config;
     let optionType = type.replace('-group', '');
     let isSelect = type === 'select';
@@ -67,10 +68,11 @@ export default class controlSelect extends control {
         }
 
         if (isSelect) {
-          let o = this.markup('option', (<any>document).createTextNode(label), optionAttrs);
+          let o = this.markup('option', document.createTextNode(label), optionAttrs);
           options.push(o);
         } else {
           let wrapperClass = optionType;
+          let labelContents = [ label ];
           if (inline) {
             wrapperClass += '-inline';
           }
@@ -79,17 +81,17 @@ export default class controlSelect extends control {
             optionAttrs.checked = 'checked';
             delete optionAttrs.selected;
           }
-          let input = this.markup('input', null, (<any>Object).assign({}, data, optionAttrs));
-          let labelAttrs : any= {for: optionAttrs.id};
-          let labelContent : any = [input, label];
+          let input = this.markup('input', null, Object.assign({}, data, optionAttrs));
+          let labelAttrs: any = {for: optionAttrs.id};
+          label = this.markup('label', labelContents, labelAttrs);
+          let output = [ input, label ];
           if (toggle) {
-            let kcToggle = this.markup('span');
-            labelContent = [input, kcToggle, label];
             labelAttrs.className = 'kc-toggle';
+            labelContents.unshift(input, this.markup('span'));
+            output = this.markup('label', labelContents, labelAttrs);
           }
 
-          let inputLabel = this.markup('label', labelContent, labelAttrs);
-          let wrapper = this.markup('div', inputLabel, {className: wrapperClass});
+          let wrapper = this.markup('div', output, {className: wrapperClass});
           options.push(wrapper);
         }
       }
@@ -110,7 +112,7 @@ export default class controlSelect extends control {
           wrapperClass += '-inline';
         }
 
-        let optionAttrs = (<any>Object).assign({}, data, otherOptionAttrs);
+        let optionAttrs = Object.assign({}, data, otherOptionAttrs);
         optionAttrs.type = optionType;
 
         let otherValAttrs = {
@@ -125,13 +127,13 @@ export default class controlSelect extends control {
           id: `${otherOptionAttrs.id}-value`,
           className: 'other-val'
         };
-        let otherInputs : any = [
-          this.markup('input', null, optionAttrs),
+        let primaryInput = this.markup('input', null, optionAttrs);
+        let otherInputs = [
           document.createTextNode('Other'),
           this.markup('input', null, otherValAttrs)
         ];
         let inputLabel = this.markup('label', otherInputs, {for: optionAttrs.id});
-        let wrapper = this.markup('div', inputLabel, {className: wrapperClass});
+        let wrapper = this.markup('div', [ primaryInput, inputLabel ], {className: wrapperClass});
         options.push(wrapper);
       }
     }
@@ -185,7 +187,7 @@ export default class controlSelect extends control {
    * @param  {String} otherId id of the "other" option input
    */
   otherOptionCB(otherId) {
-    const otherInput : any = document.getElementById(otherId);
+    const otherInput: any = document.getElementById(otherId);
     const otherInputValue = document.getElementById(`${otherId}-value`);
 
     if (otherInput.checked) {

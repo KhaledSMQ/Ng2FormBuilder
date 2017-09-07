@@ -1,17 +1,14 @@
 import 'babel-regenerator-runtime';
 import '../../assets/sass/form-builder.scss';
-import Dom from './dom';
-import {remove} from './dom';
-import {
-    Data
-} from './data';
+import Dom, { remove } from './dom';
+import { Data } from './data';
 import utils from './utils';
 import events from './events';
 import layout from './layout';
 import Helpers from './helpers';
-import {defaultOptions, defaultI18n, config, styles} from './config';
+import { config, styles } from './config';
 import './controls/index';
-import  { control } from './control';
+import { control } from './control';
 import "jquery";
 import controlCustom from "./controls/custom";
 import I18N from "./mi18n";
@@ -59,12 +56,13 @@ const FormBuilder =  (opts, element) =>{
     // load in any custom specified controls, or preloaded plugin controls
     //control.loadCustoms(opts.controls);
 
+  opts = h.processOptions(opts);
+
     // register any passed custom templates & fields
     if (Object.keys(opts.fields).length) {
         controlCustom.register(opts.templates, opts.fields);
     }
 
-    opts = h.processOptions(opts);
     const subtypes = (<any>config).subtypes = h.processSubtypes(opts.subtypes);
     h.editorUI(formID);
 
@@ -403,65 +401,57 @@ const FormBuilder =  (opts, element) =>{
     /**
      * Add data for field with options [select, checkbox-group, radio-group]
      *
-     * @todo   refactor this nasty ~crap~ code, its actually painful to look at
      * @param  {Object} fieldData
      * @return {String} field options markup
      */
     let fieldOptions = function (fieldData) {
-        let {type, values, name} = fieldData;
-        let optionActions = [
-            utils.markup('a', i18n.addOption, {className: 'add add-opt'})
-        ];
-        let fieldOptions = [
-            `<label class="false-label">${i18n.selectOptions}</label>`
-        ];
-        const isMultiple = fieldData.multiple || (type === 'checkbox-group');
-        const optionDataTemplate = label => {
-            let optionData: any = {
-                label,
-                value: utils.hyphenCase(label)
-            };
-
-            if (type !== 'autocomplete') {
-                optionData.selected = false;
-            }
-
-            return optionData;
+      let {type, values, name} = fieldData;
+      let optionActions = [
+        m('a', i18n.addOption, {className: 'add add-opt'})
+      ];
+      let fieldOptions = [
+        m('label', i18n.selectOptions, {className: 'false-label'})
+      ];
+      const isMultiple = fieldData.multiple || (type === 'checkbox-group');
+      const optionDataTemplate = label => {
+        let optionData: any = {
+          label,
+          value: utils.hyphenCase(label)
         };
 
-        if (!values || !values.length) {
-            let defaultOptCount = [1, 2, 3];
-            if (utils.inArray(type, ['checkbox-group', 'checkbox'])) {
-                defaultOptCount = [1];
-            }
-            values = defaultOptCount.map(function (index) {
-                let label = `${i18n.option} ${index}`;
-                return optionDataTemplate(label);
-            });
-
-            let firstOption = values[0];
-            if (firstOption.hasOwnProperty('selected')) {
-                firstOption.selected = true;
-            }
-        } else {
-            // ensure option data is has all required keys
-            values.forEach(option => (<any>Object).assign({}, {selected: false}, option));
+        if ( type !== 'autocomplete' ) {
+          optionData.selected = false;
         }
 
-        fieldOptions.push('<div class="sortable-options-wrap">');
-        fieldOptions.push('<ol class="sortable-options">');
-        utils.forEach(values, i => {
-            fieldOptions.push(selectFieldOptions(name, values[i], isMultiple));
-        });
-        fieldOptions.push('</ol>');
-        fieldOptions.push(utils.markup('div', optionActions, {
-            className: 'option-actions'
-        }).outerHTML);
-        fieldOptions.push('</div>');
+        return optionData;
+      };
 
-        return utils.markup('div', fieldOptions.join(''), {
-            className: 'form-group field-options'
-        }).outerHTML;
+      if ( !values || !values.length ) {
+        let defaultOptCount = [ 1, 2, 3 ];
+        if ( utils.inArray(type, [ 'checkbox-group', 'checkbox' ]) ) {
+          defaultOptCount = [ 1 ];
+        }
+        values = defaultOptCount.map(function (index) {
+          let label = `${i18n.option} ${index}`;
+          return optionDataTemplate(label);
+        });
+
+        let firstOption = values[ 0 ];
+        if ( firstOption.hasOwnProperty('selected') ) {
+          firstOption.selected = true;
+        }
+      } else {
+        // ensure option data is has all required keys
+        values.forEach(option => Object.assign({}, {selected: false}, option));
+      }
+
+      const optionActionsWrap = m('div', optionActions, {className: 'option-actions'});
+      const options = m('ol', values.map(option => selectFieldOptions(name, option, isMultiple)), {className: 'sortable-options'});
+      const optionsWrap = m('div', [ options, optionActionsWrap ], {className: 'sortable-options-wrap'});
+
+      fieldOptions.push(optionsWrap);
+
+      return m('div', fieldOptions, {className: 'form-group field-options'}).outerHTML;
     };
 
     const defaultFieldAttrs = type => {
@@ -1024,86 +1014,98 @@ const FormBuilder =  (opts, element) =>{
 
     // Append the new field to the editor
     let appendNewField = function (values, isNew = true) {
-        let type = values.type || 'text';
-        let label = values.label || i18n[type] || i18n.label;
-        let delBtn = m('a', i18n.remove, {
-            id: 'del_' + data.lastID,
-            className: 'del-button btn delete-confirm',
-            title: i18n.removeMessage
-        });
-        let toggleBtn = m('a', null, {
-            id: data.lastID + '-edit',
-            className: 'toggle-form btn icon-pencil',
-            title: i18n.hide
-        });
-        let copyBtn = m('a', null, {
-            id: data.lastID + '-copy',
-            className: 'copy-button btn icon-copy',
-            title: i18n.copyButtonTooltip
-        });
+      let type = values.type || 'text';
+      let label = values.label || i18n[ type ] || i18n.label;
+      if ( opts.disabledFieldButtons === undefined )
+        opts.disabledFieldButtons = [];
+      let disabledFieldButtons = opts.disabledFieldButtons[ type ] || values.disabledFieldButtons;
+      let fieldButtons = [
+        m('a', null, {
+          type: 'remove',
+          id: 'del_' + data.lastID,
+          className: 'del-button btn icon-cancel delete-confirm',
+          title: i18n.removeMessage,
+        }),
+        m('a', null, {
+          type: 'edit',
+          id: data.lastID + '-edit',
+          className: 'toggle-form btn icon-pencil',
+          title: i18n.hide,
+        }),
+        m('a', null, {
+          type: 'copy',
+          id: data.lastID + '-copy',
+          className: 'copy-button btn icon-copy',
+          title: i18n.copyButtonTooltip,
+        }),
+      ];
 
-        let liContents = m(
-            'div', [toggleBtn, copyBtn, delBtn], {className: 'field-actions'}
-        ).outerHTML;
+      if ( disabledFieldButtons && Array.isArray(disabledFieldButtons) ) {
+        fieldButtons = fieldButtons.filter(btnData => !utils.inArray(btnData.type, disabledFieldButtons))
+      }
 
-        liContents += m('label', utils.parsedHtml(label), {
-            className: 'field-label'
-        }).outerHTML;
-        let requiredDisplay = values.required ? 'display:inline' : '';
-        liContents += m('span', ' *', {
-            className: 'required-asterisk',
-            style: requiredDisplay
-        }).outerHTML;
+      let liContents = [ m('div', fieldButtons, {className: 'field-actions'}) ];
 
-        // add the help icon
-        let descAttrs: any = {
-            className: 'tooltip-element',
-            tooltip: values.description,
-            style: values.description ? 'display:inline-block' : 'display:none'
-        };
-        liContents += `<span ${utils.attrString(descAttrs)}>?</span>`;
+      liContents.push(
+        m('label', utils.parsedHtml(label), {
+          className: 'field-label',
+        })
+      );
 
-        liContents += m('div', '', {className: 'prev-holder'}).outerHTML;
-        liContents += `<div id="${data.lastID}-holder" class="frm-holder">`;
-        liContents += '<div class="form-elements">';
+      liContents.push(
+        m('span', ' *', {
+          className: 'required-asterisk',
+          style: values.required ? 'display:inline' : '',
+        })
+      );
 
-        liContents += advFields(values);
-        liContents += m('a', i18n.close, {className: 'close-field'}).outerHTML;
+      // add the help icon
+      let descAttrs = {
+        className: 'tooltip-element',
+        tooltip: values.description,
+        style: values.description ? 'display:inline-block' : 'display:none',
+      };
+      liContents.push(m('span', '?', descAttrs));
 
-        liContents += '</div>';
-        liContents += '</div>';
+      liContents.push(m('div', '', {className: 'prev-holder'}));
+      const formElements = m('div', [ advFields(values), m('a', i18n.close, {className: 'close-field'}) ], {
+        className: 'form-elements',
+      });
+      liContents.push(m('div', formElements, {id: `${data.lastID}-holder`, className: 'frm-holder'}));
 
-        let field = m('li', liContents, {
-            'class': type + '-field form-field',
-            'type': type,
-            id: data.lastID
-        });
-        let $li = $(field);
+      let field = m('li', liContents, {
+        class: type + '-field form-field',
+        type: type,
+        id: data.lastID,
+      });
+      let $li = $(field);
 
-        $li.data('fieldData', {attrs: values});
+      $li.data('fieldData', {attrs: values});
 
-        if (typeof h.stopIndex !== 'undefined') {
-            $('> li', d.stage).eq(h.stopIndex).before($li);
-        } else {
-            $stage.append($li);
-        }
+      if ( typeof h.stopIndex !== 'undefined' ) {
+        $('> li', d.stage)
+          .eq(h.stopIndex)
+          .before($li)
+      } else {
+        $stage.append($li)
+      }
 
-      (<any>$('.sortable-options', $li)).sortable({update: () => h.updatePreview($li)});
+      (<any>jQuery('.sortable-options', $li)).sortable({update: () => h.updatePreview($li)});
 
-        // generate the control, insert it into the list item & add it to the stage
-        h.updatePreview($li);
+      // generate the control, insert it into the list item & add it to the stage
+      h.updatePreview($li);
 
-        if (opts.typeUserEvents[type] && opts.typeUserEvents[type].onadd) {
-            opts.typeUserEvents[type].onadd(field);
-        }
+      if ( opts.typeUserEvents[ type ] && opts.typeUserEvents[ type ].onadd ) {
+        opts.typeUserEvents[ type ].onadd(field)
+      }
 
-        if (opts.editOnAdd && isNew) {
-            h.closeAllEdit();
-            h.toggleEdit(data.lastID, false);
-            // field.scrollIntoView();
-        }
+      if ( opts.editOnAdd && isNew ) {
+        h.closeAllEdit();
+        h.toggleEdit(data.lastID, false)
+        // field.scrollIntoView();
+      }
 
-        data.lastID = h.incrementId(data.lastID);
+      data.lastID = h.incrementId(data.lastID)
     };
 
     // Select field html, since there may be multiple
@@ -1187,7 +1189,7 @@ const FormBuilder =  (opts, element) =>{
     // delete options
     $stage.on('click touchstart', '.remove', e => {
         let _event : any = e;
-        let $field = (_event.target).parents('.form-field:eq(0)');
+      let $field = jQuery(_event.target).parents('.form-field:eq(0)');
         let field = $field[0];
         let type: any = field.getAttribute('type');
         let $option = $(e.target.parentElement);
@@ -1234,12 +1236,15 @@ const FormBuilder =  (opts, element) =>{
         }
     });
     $stage.on('dblclick', 'li.form-field, .field-label', (e: any) => {
+      if ( e.target.tagName.toLowerCase() === 'input' || e.target.contentEditable ) {
+        return;
+      }
         e.stopPropagation();
         e.preventDefault();
         if (e.handled !== true) {
-            let targetID = e.target.tagName == 'li' ? $(e.target).attr('id') : $(e.target).closest('li.form-field').attr('id');
-            h.toggleEdit(targetID);
-            e.handled = true;
+          let targetID = e.target.tagName == 'li' ? $(e.target).attr('id') : $(e.target).closest('li.form-field').attr('id');
+          h.toggleEdit(targetID);
+          e.handled = true;
         }
     });
 
@@ -1409,15 +1414,17 @@ const FormBuilder =  (opts, element) =>{
     });
 
     // Attach a callback to toggle roles visibility
-    $stage.on('click', 'input.fld-access', function (e) {
-        let roles = $(e.target).closest('.form-field').find('.available-roles');
+  $stage.on('click', 'input.fld-access', function (e) {
+    let roles = $(e.target)
+      .closest('.form-field')
+      .find('.available-roles');
         let enableRolesCB = $(e.target);
-        roles.slideToggle(250, function () {
-            if (!enableRolesCB.is(':checked')) {
-                $('input[type="checkbox"]', roles).removeAttr('checked');
-            }
-        });
-    });
+    roles.slideToggle(250, function () {
+      if ( !enableRolesCB.is(':checked') ) {
+        $('input[type=checkbox]', roles).removeAttr('checked')
+      }
+    })
+  });
 
     // Attach a callback to add new options
     $stage.on('click', '.add-opt', function (e) {

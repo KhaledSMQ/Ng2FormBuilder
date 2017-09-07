@@ -1,0 +1,36 @@
+
+#fb-template {
+/ / display: none;
+}
+
+.template-textarea-wrap {
+  display: block !important;
+}
+
+.content {
+  margin: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-top: 5em;
+}
+
+.form-rendered .build-wrap {
+  display: none;
+}
+
+.render-wrap {
+  display: none;
+}
+
+.form-rendered .render-wrap {
+  display: block;
+}
+
+#edit-form {
+  display: none;
+  float: right;
+}
+
+.form-rendered #edit-form {
+  display: block;
+}

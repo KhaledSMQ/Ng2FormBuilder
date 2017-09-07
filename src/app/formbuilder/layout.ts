@@ -27,7 +27,7 @@ export default class layout {
       default: (field, label, help, data) => {
         // append help into the label
         if (help) {
-          label.append(help);
+          label.appendChild(help);
         }
 
         // wrap the output in a form-group div & return
@@ -173,7 +173,8 @@ export default class layout {
    * Process a template & prepare the results
    * @param {String} template - template key to execute
    // tslint:disable-next-line:max-line-length
-   * @param {Array} args - any number of args that should be passed to the template. this.data is sent as the last parameter to any template.
+   * @param {Array} args - any number of args that should be passed to the template. this.data is sent as the last
+   *     parameter to any template.
    * @return {DOMElement}
    */
   processTemplate(template, ...args) {

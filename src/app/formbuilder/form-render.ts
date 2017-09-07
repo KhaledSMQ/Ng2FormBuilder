@@ -1,12 +1,12 @@
 import 'babel-polyfill';
 import 'babel-regenerator-runtime';
 import '../../assets/sass/form-render.scss';
- import utils from './utils';
+import utils from './utils';
 import events from './events';
 import layout from './layout';
 import './control/index';
-import {defaultI18n} from './config';
-import {control} from "./control";
+import { defaultI18n } from './config';
+import { control } from "./control";
 import controlCustom from "./controls/custom";
 import I18N from "./mi18n";
 
@@ -29,7 +29,7 @@ class FormRender {
       controls: {}, // custom controls
       controlConfig: {}, // additional configuration for controls
       destroyTemplate: true, // @todo - still needed?
-      container: false,
+      container: false,  // string selector or Node element
       dataType: 'json',
       formData: false,
       i18n: (<any>Object).assign({}, defaultI18n),
@@ -94,17 +94,20 @@ class FormRender {
     /**
      * Extend Element prototype to allow us to append fields
      *
-     * @param  {Object} fields Node elements
+     * @param  {fields} fields array of elements
      */
     if (typeof (<any>Element.prototype).appendFormFields !== 'function') {
         (<any>Element.prototype).appendFormFields = function(fields) {
-        let element = this;
         if (!Array.isArray(fields)) {
           fields = [fields];
         }
-        fields.forEach(field => {
-          element.appendChild(field);
-          field.dispatchEvent(events.fieldRendered);
+          let renderedFormWrap = utils.markup('div', fields, {
+            className: 'rendered-form'
+          });
+          this.appendChild(renderedFormWrap);
+          fields.forEach(field => {
+            renderedFormWrap.appendChild(field);
+            field.dispatchEvent(events.fieldRendered);
         });
       };
     }
@@ -138,13 +141,28 @@ class FormRender {
   }
 
   /**
+   * parses `container` option or returns element
+   * @param  {Object} element
+   * @return {Object} parsedElement
+   */
+  getElement(element) {
+    element = this.options.container || element;
+    if ( element instanceof jQuery ) {
+      element = element[ 0 ];
+    } else if ( typeof element === 'string' ) {
+      element = document.querySelector(element);
+    }
+    return element;
+  }
+  /**
    * Main render method which produces the form from passed configuration
    * @param {Object} element - an html element to render the form into (optional)
    * @return {Object} FormRender
    */
   render(element = null) {
-    let formRender = this;
-    let opts : any = this.options;
+    const formRender = this;
+    let opts = this.options;
+    element = this.getElement(element);
 
     let runCallbacks = function() {
       if (opts.onRender) {
@@ -176,24 +194,11 @@ class FormRender {
         rendered.push(field);
       }
 
+
       // if rendering, inject the fields into the specified wrapper container/element
-      if (opts.render) {
-        if (opts.container) {
-          // isn't this going to fail to dispatch the events.fieldRendered event as per appendFormFields?
-          // perhaps a better approach is to create an empty wrapper div, append it to the container, and set the new wrapper as the element
-          // then remove the 'else if' & empty the element + appendFormFields.
-          let renderedFormWrap = utils.markup('div', rendered, {
-            className: 'rendered-form'
-          });
-          if (opts.container instanceof jQuery) {
-            opts.container = opts.container[0];
-          }
-          opts.container.emptyContainer();
-          opts.container.appendChild(renderedFormWrap);
-        } else if (element) {
-          element.emptyContainer();
-          element.appendFormFields(rendered);
-        }
+      if ( opts.render && element ) {
+        element.emptyContainer();
+        element.appendFormFields(rendered);
 
         runCallbacks();
         opts.notify.success(opts.messages.formRendered);
@@ -214,7 +219,9 @@ class FormRender {
   /**
    * Render a single control / field
    * Expects only a single field configuration to be set in opt.formData
-   * @param {Object} element - an optional DOM element to render the field into - if not specified will just return the rendered field - note if you do this you will need to manually call element.dispatchEvent('fieldRendered') on the returned element when it is rendered into the DOM
+   * @param {Object} element - an optional DOM element to render the field into - if not specified will just return the
+   *     rendered field - note if you do this you will need to manually call element.dispatchEvent('fieldRendered') on
+   *     the returned element when it is rendered into the DOM
    * @return {Object} the formRender object
    */
   renderControl(element = null) {
@@ -246,7 +253,8 @@ class FormRender {
   /**
    * renders an individual field into the current element
    * @param {Object} data - data structure for a single field output from formBuilder
-   * @param {Object} options - optional subset of formRender options - doesn't support container or other form rendering based options.
+   * @param {Object} options - optional subset of formRender options - doesn't support container or other form
+   *     rendering based options.
    * @return {DOMElement} the rendered field
    */
   (<any>$.fn).controlRender = function(data, options : any = {}) {
